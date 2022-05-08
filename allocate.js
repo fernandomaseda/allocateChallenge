@@ -59,11 +59,11 @@ const purchaseOrders = [
 function allocate(salesOrders, purchaseOrders) {
 
     const allocatedOrders = [];
-    let salesOrdersCopy = [...salesOrders];       // crea una copia de salesOrders
-    let purchaseOrdersCopy = [...purchaseOrders]; // crea una copia de purchaseOrders
+    let salesOrdersCopy = [...salesOrders];       // copy of salesOrders
+    let purchaseOrdersCopy = [...purchaseOrders]; // copy of purchaseOrders
 
+    // sort for FIFO - first in first out
     salesOrdersCopy.sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime())
-
     purchaseOrdersCopy.sort((a, b) => new Date(a.receiving).getTime() - new Date(b.receiving).getTime())
 
     for (let i = 0; i < salesOrdersCopy.length; i++) {
@@ -88,13 +88,13 @@ function allocate(salesOrders, purchaseOrders) {
 
                 if (purchaseOrderQuantity > (salesOrderQuantity - allocatedOrder.quantity)) {
                     let rest = salesOrderQuantity - allocatedOrder.quantity
-                    allocatedOrder.quantity = allocatedOrder.quantity + rest; //completed order
+                    allocatedOrder.quantity = allocatedOrder.quantity + rest; //allocate the rest of the sale order not allocated
                     purchaseOrdersCopy[j].quantity = purchaseOrdersCopy[j].quantity - rest // refresh purchaseOrderQuantity
 
                     allocatedOrder.from.push(`${purchaseOrderId} sent ${rest}`); //log
                 }
                 else if (purchaseOrderQuantity <= (salesOrderQuantity - allocatedOrder.quantity)) {
-                    allocatedOrder.quantity = allocatedOrder.quantity + purchaseOrderQuantity; //partial completed order
+                    allocatedOrder.quantity = allocatedOrder.quantity + purchaseOrderQuantity;  //allocate the max purchaseOrderQuantity
                     purchaseOrdersCopy[j].quantity = 0; // refresh purchaseOrderQuantity
 
                     allocatedOrder.from.push(`${purchaseOrderId} sent ${purchaseOrderQuantity}`); //log
